@@ -7,7 +7,8 @@ public class Subset {
 				rq.enqueue(StdIn.readString());
 			}
 		}
-		for (String s : rq)
-			StdOut.print(rq.dequeue());
+		for (int i = 0; i < k; i++) {
+			System.out.println(rq.dequeue());
+		}
 	}
 }

@@ -34,7 +34,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 			throw new NoSuchElementException("Stack underflow");
 		int randomIndex = StdRandom.uniform(N);
 		Item item = a[randomIndex];
-		a[randomIndex] = null; // to avoid loitering
+		a[randomIndex] = a[N - 1];
+		a[N - 1] = null;// to avoid loitering
 		N--;
 		// shrink size of array if necessary
 		if (N > 0 && N == a.length / 4)
@@ -46,7 +47,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	public Item sample() {
 		if (isEmpty())
 			throw new NoSuchElementException("Stack underflow");
-		return a[N - 1];
+		return a[StdRandom.uniform(0, N)];
 	}
 
 	// return an independent iterator over items in random order
@@ -56,14 +57,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
 	// an iterator, doesn't implement remove() since it's optional
 	private class ArrayIterator implements Iterator<Item> {
-		private int i;
+		private Item[] it;
+		private int s;
 
 		public ArrayIterator() {
-			i = N;
+			s = N;
+			it = (Item[]) new Object[s];
+			for (int i = 0; i < s; i++) {
+				it[i] = a[i];
+			}
+			StdRandom.shuffle(it);
 		}
 
 		public boolean hasNext() {
-			return i > 0;
+			return s > 0;
 		}
 
 		public void remove() {
@@ -71,9 +78,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 		}
 
 		public Item next() {
-			if (!hasNext())
+			if (!hasNext()) {
 				throw new NoSuchElementException();
-			return a[--i];
+			}
+			return it[--s];
 		}
 	}
 
