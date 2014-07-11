@@ -16,14 +16,10 @@ public class Brute {
 		for (int i = 0; i < N; i++) {
 			int x = in.readInt();
 			int y = in.readInt();
-//			if (i > 0 && (i % 4) == 0) {
-//				checkAndDraw(points);
-//			}
 			points[i] = new Point(x, y);
-			Point p = points[i];
-			System.out.println(p);
 		}
 
+		checkAndDraw(points);
 		// display to screen all at once
 		StdDraw.show(0);
 
