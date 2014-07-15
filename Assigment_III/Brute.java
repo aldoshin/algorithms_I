@@ -1,5 +1,14 @@
 import java.util.Arrays;
 
+/*************************************************************************
+ * Name: Aldo Perez Email: aldoshin@gmail.com
+ * 
+ * Compilation: javac Brute.java Execution: Dependencies: StdDraw.java
+ * 
+ * Description: An immutable data type for points in the plane.
+ * 
+ *************************************************************************/
+
 public class Brute {
 
 	public static void main(String[] args) {
@@ -9,20 +18,20 @@ public class Brute {
 		StdDraw.show(0);
 		StdDraw.setPenRadius(0.01); // make the points a bit larger
 
-		In in = new In("C:\\Users\\aldperez\\Downloads\\collinear\\input6.txt");
+		String filename = args[0];
+        In in = new In(filename);
 		int N = in.readInt();
 		Point[] points = new Point[N];
 
 		for (int i = 0; i < N; i++) {
-			int x = in.readInt();
-			int y = in.readInt();
-			points[i] = new Point(x, y);
+			Point p = new Point(in.readInt(), in.readInt());
+			points[i] = p;
+			p.draw();
 		}
 
 		checkAndDraw(points);
 		// display to screen all at once
 		StdDraw.show(0);
-
 		// reset the pen radius
 		StdDraw.setPenRadius();
 	}
@@ -33,23 +42,30 @@ public class Brute {
 	 * 
 	 * @param points
 	 */
-	private static void checkAndDraw(Point[] points) {
-		int i = 0;
-		int j = 1;
-		int k = 2;
-		int l = 3;
-
-		if ((points[i].slopeTo(points[j]) == points[i].slopeTo(points[k]))
-				&& (points[i].slopeTo(points[j]) == points[i]
-						.slopeTo(points[l]))) {
-			Arrays.sort(points);
-			for (int s = 0; s < points.length; s++) {
-				StdOut.print(points[s]);
-				if (s < 3)
-					StdOut.print(" -> ");
+	private static void checkAndDraw(Point[] arr) {
+		for (int i = 0; i < arr.length - 3; i += 1) {
+			for (int j = i + 1; j < arr.length - 2; j += 1) {
+				for (int k = j + 1; k < arr.length - 1; k += 1) {
+					for (int l = k + 1; l < arr.length; l += 1) {
+						// check if these 4 point have the same slope
+						if ((arr[i].slopeTo(arr[j]) == arr[i].slopeTo(arr[k]))
+								&& (arr[i].slopeTo(arr[j]) == arr[i]
+										.slopeTo(arr[l]))) {
+							Point[] temp = new Point[] { arr[i], arr[j],
+									arr[k], arr[l] };
+							Arrays.sort(temp);
+							for (int s = 0; s < 4; s++) {
+								StdOut.print(temp[s]);
+								if (s < 3)
+									StdOut.print(" -> ");
+							}
+							StdOut.println();
+							temp[0].drawTo(temp[3]);
+						}
+					}
+				}
 			}
-			StdOut.println();
-			points[0].drawTo(points[3]);
+
 		}
 	}
 

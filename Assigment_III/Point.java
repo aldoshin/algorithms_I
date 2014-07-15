@@ -20,6 +20,8 @@ public class Point implements Comparable<Point> {
 		public int compare(Point o1, Point o2) {
 			double slope1 = slopeTo(o1);
 			double slope2 = slopeTo(o2);
+			// System.out.println("slope1 = " + slope1);
+			// System.out.println("slope2 = " + slope2);
 			if (slope1 < slope2)
 				return -1;
 			else if (slope1 == slope2)
@@ -54,8 +56,8 @@ public class Point implements Comparable<Point> {
 	// slope between this point and that point
 	public double slopeTo(Point that) {
 		/* (this.y == that.y && this.x < that.x) */
-		Double dividend = Double.valueOf(that.y - this.y);
-		Double divisor = Double.valueOf(that.x - this.x);
+		double dividend = that.y - this.y;
+		double divisor = that.x - this.x;
 
 		if (this.compareTo(that) == 0)
 			return Double.NEGATIVE_INFINITY;
@@ -65,7 +67,8 @@ public class Point implements Comparable<Point> {
 			else
 				return Double.POSITIVE_INFINITY;
 		} else {
-			return dividend.floatValue() / divisor.floatValue();
+			double m = dividend / divisor;
+			return (m < 0) ? m : Math.abs(m);
 		}
 	}
 
