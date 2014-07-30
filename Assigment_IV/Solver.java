@@ -67,7 +67,8 @@ public class Solver {
 	// solve a slider puzzle (given below)
 	public static void main(String[] args) {
 		// create initial board from file
-		In in = new In("C:\\Users\\aldperez\\Downloads\\8puzzle\\puzzle44.txt");
+		In in = new In(
+				"C:\\Users\\aldperez\\Downloads\\8puzzle\\puzzle44.txt");
 		int N = in.readInt();
 		int[][] blocks = new int[N][N];
 		for (int i = 0; i < N; i++)
@@ -133,7 +134,7 @@ public class Solver {
 			s.append(board.toString());
 			return s.toString();
 		}
-
+		
 		public Board getBoard() {
 			return board;
 		}

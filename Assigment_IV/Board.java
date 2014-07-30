@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*************************************************************************
@@ -11,7 +12,7 @@ import java.util.List;
  *************************************************************************/
 public class Board {
 	private int N;
-	private int[][] tiles;
+	private int[] tiles;
 	private int zeroRow;
 	private int zeroColumn;
 	private int manhattanVal;
@@ -21,7 +22,7 @@ public class Board {
 	// (where blocks[i][j] = block in row i, column j)
 	public Board(int[][] blocks) {
 		this.N = blocks.length;
-		this.tiles = copyBoard(blocks);
+		this.tiles = copy2DBoardTo1D(blocks);
 		findZero();
 	}
 
@@ -31,12 +32,9 @@ public class Board {
 
 	public int hamming() {
 		if (this.hammingVal == 0) {
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j < N; j++) {
-					int elemtn = xyTo1D(i, j);
-					if ((tiles[i][j] != 0) && tiles[i][j] != (elemtn + 1)) {
-						this.hammingVal++;
-					}
+			for (int i = 0; i < tiles.length; i++) {
+				if ((tiles[i] != 0) && tiles[i] != (i + 1)) {
+					this.hammingVal++;
 				}
 			}
 		}
@@ -45,16 +43,13 @@ public class Board {
 
 	public int manhattan() {
 		if (this.manhattanVal == 0) {
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j < N; j++) {
-					int elemtn = xyTo1D(i, j);
-					if ((tiles[i][j] != 0) && tiles[i][j] != (elemtn + 1)) {
-						int rightVal = tiles[i][j] - 1;
-						int rightX = (rightVal / N);
-						int rightY = (rightVal % N);
-						manhattanVal += Math.abs(rightX - i)
-								+ Math.abs(rightY - j);
-					}
+			for (int i = 0; i < tiles.length; i++) {
+				int current = tiles[i];
+				if ((current != 0)) {
+					int rightX = (i / N);
+					int rightY = (i % N);
+					manhattanVal += Math.abs(rightX - ((current - 1) / N))
+							+ Math.abs(rightY - ((current - 1) % N));
 				}
 			}
 		}
@@ -63,20 +58,12 @@ public class Board {
 
 	// is this board the goal board?
 	public boolean isGoal() {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				int elemtn = xyTo1D(i, j);
-				if ((tiles[i][j] != 0) && tiles[i][j] != (elemtn + 1)) {
-					return false;
-				}
-			}
-		}
-		return true;
+		return hamming() == 0;
 	}
 
 	// a board obtained by exchanging two adjacent blocks in the same row
 	public Board twin() {
-		int[][] copy = copyBoard(this.tiles);
+		int[][] copy = copy1DCharTo2DArray(this.tiles);
 		int changableRow = 0;
 		if (this.zeroRow == 0) {
 			changableRow = this.zeroRow + 1;
@@ -95,7 +82,8 @@ public class Board {
 			return false;
 		if (x.getClass() != this.getClass())
 			return false;
-		return (this.toString().equals(x.toString()));
+		Board that = (Board) x;
+		return Arrays.equals(this.tiles, that.tiles);
 	}
 
 	public Iterable<Board> neighbors() {
@@ -116,14 +104,14 @@ public class Board {
 			changableColumns.add(zeroColumn + 1);
 		}
 		for (Integer row : changableRows) {
-			int[][] copy = copyBoard(this.tiles);
+			int[][] copy = copy1DCharTo2DArray(this.tiles);
 			int switched = copy[row][this.zeroColumn];
 			copy[row][this.zeroColumn] = copy[this.zeroRow][this.zeroColumn];
 			copy[this.zeroRow][this.zeroColumn] = switched;
 			n.enqueue(new Board(copy));
 		}
 		for (Integer col : changableColumns) {
-			int[][] copy = copyBoard(this.tiles);
+			int[][] copy = copy1DCharTo2DArray(this.tiles);
 			int switched = copy[this.zeroRow][col];
 			copy[this.zeroRow][col] = copy[this.zeroRow][this.zeroColumn];
 			copy[this.zeroRow][this.zeroColumn] = switched;
@@ -137,23 +125,31 @@ public class Board {
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		s.append(N + "\n");
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				s.append(String.format("%2d ", tiles[i][j]));
-			}
-			s.append("\n");
+		for (int i = 0; i < tiles.length; i++) {
+			s.append(String.format("%2d ", tiles[i]));
+			if ((i + 1) % N == 0)
+				s.append("\n");
 		}
 		return s.toString();
 	}
 
-	private int[][] copyBoard(int[][] board) {
-		int[][] copy = new int[N][N];
+	private int[] copy2DBoardTo1D(int[][] board) {
+		int[] copy = new int[N * N];
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				copy[i][j] = board[i][j];
+				copy[xyTo1D(i, j)] = board[i][j];
 			}
 		}
 		return copy;
+	}
+
+	private int[][] copy1DCharTo2DArray(int[] src) {
+		int length = src.length;
+		int[][] tgt = new int[N][N];
+		for (int i = 0; i < length; i++) {
+			tgt[i / N][i % N] = src[i];
+		}
+		return tgt;
 	}
 
 	private int xyTo1D(int i, int j) {
@@ -161,12 +157,10 @@ public class Board {
 	}
 
 	private void findZero() {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (tiles[i][j] == 0) {
-					this.zeroRow = i;
-					this.zeroColumn = j;
-				}
+		for (int i = 0; i < tiles.length; i++) {
+			if (tiles[i] == 0) {
+				this.zeroRow = (i / N);
+				this.zeroColumn = (i % N);
 			}
 		}
 	}
