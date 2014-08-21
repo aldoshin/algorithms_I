@@ -83,7 +83,8 @@ public class KdTree {
 		return x;
 	}
 
-	private RectHV getLeftRectByLevel(Node next, RectHV rect, Point2D p, int level) {
+	private RectHV getLeftRectByLevel(Node next, RectHV rect, Point2D p,
+			int level) {
 		if (next == null) {
 			if (level % 2 == 0) {
 				return new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), p.y());
@@ -95,7 +96,8 @@ public class KdTree {
 		}
 	}
 
-	private RectHV getRightRectByLevel(Node next, RectHV rect, Point2D p, int level) {
+	private RectHV getRightRectByLevel(Node next, RectHV rect, Point2D p,
+			int level) {
 		if (next == null) {
 			if (level % 2 == 0) {
 				return new RectHV(rect.xmin(), p.y(), rect.xmax(), rect.ymax());
@@ -137,72 +139,52 @@ public class KdTree {
 		}
 	}
 
-	public Point2D nearest(Point2D query) {
-		if (isEmpty()) {
-			return null;
-		} else {
-			return nearest(root, query, null, 0);
-		}
-	}
+	private Point2D nearest(Node x, Point2D p, Point2D mp, boolean vert) {
+		Point2D min = mp;
 
-	private Point2D nearest(Node x, Point2D query, Point2D closest,
-			double cloDistance) {
-		if (x != null) {
-			if (closest != null
-					&& (cloDistance < x.rect.distanceSquaredTo(query))) {
-				return closest;
+		if (x == null)
+			return min;
+		if (p.distanceSquaredTo(x.p) < p.distanceSquaredTo(min))
+			min = x.p;
+
+		// choose the side that contains the query point first
+		if (vert) {
+			if (x.p.x() < p.x()) {
+				min = nearest(x.rt, p, min, !vert);
+				if (x.lb != null
+						&& (min.distanceSquaredTo(p) > x.lb.rect
+								.distanceSquaredTo(p)))
+					min = nearest(x.lb, p, min, !vert);
 			} else {
-				closest = x.p;
-				cloDistance = closest.distanceSquaredTo(query);
-				if (x.lb != null && x.rt != null) {
-					Point2D cl = null;
-					Point2D cr = null;
-					if (x.lb.rect.contains(query)) {
-						cl = nearest(x.lb, query, closest, cloDistance);
-						if (cl.distanceSquaredTo(query) < x.rt.rect
-								.distanceSquaredTo(query)) {
-							return compareClosest(cl, closest, query,
-									cloDistance);
-						}
-						cr = nearest(x.rt, query, closest, cloDistance);
-					} else {
-						cr = nearest(x.rt, query, closest, cloDistance);
-						if (cr.distanceSquaredTo(query) < x.lb.rect
-								.distanceSquaredTo(query)) {
-							return compareClosest(cr, closest, query,
-									cloDistance);
-						}
-						cl = nearest(x.lb, query, closest, cloDistance);
-					}
-					return compareClosest(
-							compareClosest(cl, cr, query,
-									cr.distanceSquaredTo(query)), closest,
-							query, cloDistance);
-				} else if (x.lb != null) {
-					return compareClosest(
-							nearest(x.lb, query, closest, cloDistance),
-							closest, query, cloDistance);
-				} else if (x.rt != null) {
-					return compareClosest(
-							nearest(x.rt, query, closest, cloDistance),
-							closest, query, cloDistance);
-				}
+				min = nearest(x.lb, p, min, !vert);
+				if (x.rt != null
+						&& (min.distanceSquaredTo(p) > x.rt.rect
+								.distanceSquaredTo(p)))
+					min = nearest(x.rt, p, min, !vert);
+			}
+		} else {
+			if (x.p.y() < p.y()) {
+				min = nearest(x.rt, p, min, !vert);
+				if (x.lb != null
+						&& (min.distanceSquaredTo(p) > x.lb.rect
+								.distanceSquaredTo(p)))
+					min = nearest(x.lb, p, min, !vert);
+			} else {
+				min = nearest(x.lb, p, min, !vert);
+				if (x.rt != null
+						&& (min.distanceSquaredTo(p) > x.rt.rect
+								.distanceSquaredTo(p)))
+					min = nearest(x.rt, p, min, !vert);
 			}
 		}
-		return closest;
+		return min;
 	}
 
-	private Point2D compareClosest(Point2D a, Point2D b, Point2D query,
-			double bToQuery) {
-		if (a == null) {
-			return b;
-		} else if (b == null) {
-			return a;
-		} else if (a.distanceSquaredTo(query) < bToQuery) {
-			return a;
-		} else {
-			return b;
-		}
+	// a nearest neighbor in the set to p: null if set is empty
+	public Point2D nearest(Point2D p) {
+		if (isEmpty())
+			return null;
+		return nearest(root, p, root.p, true);
 	}
 
 	public Iterable<Point2D> range(RectHV rect) {
@@ -223,10 +205,11 @@ public class KdTree {
 	}
 
 	public static void main(String[] args) {
-		String filename = "C:\\Users\\aldperez\\Downloads\\kdtree\\circle10.txt";
+
+		String filename = "C:\\Users\\aldperez\\Downloads\\kdtree\\input10K.txt";
 		In in = new In(filename);
 
-		// StdDraw.show(0);
+		 StdDraw.show(0);
 
 		// initialize the two data structures with point from standard input
 		KdTree kdtree = new KdTree();
@@ -234,14 +217,13 @@ public class KdTree {
 			double x = in.readDouble();
 			double y = in.readDouble();
 			Point2D p = new Point2D(x, y);
-			System.out.println(p);
+			// System.out.println(p);
 			kdtree.insert(p);
-			// StdDraw.clear();
-			// kdtree.draw();
-			// StdDraw.show(0);
+			StdDraw.clear();
+			kdtree.draw();
+			StdDraw.show(0);
 		}
 		// In in2 = new In(filename);
-		int i = 0;
 		// while (!in2.isEmpty()) {
 		// double x = in2.readDouble();
 		// double y = in2.readDouble();
@@ -253,7 +235,11 @@ public class KdTree {
 		// }
 		// i++;
 		// }
-		System.out.println(i + "::::::::::::::::::::::::finished"
-				+ kdtree.nearest(new Point2D(.81, .30)));
+		// Stopwatch st = new Stopwatch();
+		// for (int j = 0; j < 1000000; j++) {
+		// kdtree.nearest(new Point2D(StdRandom.uniform(0, 1), StdRandom
+		// .uniform(0, 1)));
+		// }
+		// System.out.println(st.elapsedTime());
 	}
 }
