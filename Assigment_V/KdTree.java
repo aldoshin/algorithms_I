@@ -75,27 +75,35 @@ public class KdTree {
 		int nextLevel = level + 1;
 		if (cmp < 0)
 			x.lb = put(x.lb, p, nextLevel,
-					getLeftRectByLevel(x.rect, nodePoint, nextLevel));
+					getLeftRectByLevel(x.lb, x.rect, nodePoint, nextLevel));
 		else if (!nodePoint.equals(p))
 			x.rt = put(x.rt, p, nextLevel,
-					getRightRectByLevel(x.rect, nodePoint, nextLevel));
+					getRightRectByLevel(x.rt, x.rect, nodePoint, nextLevel));
 		x.N = 1 + size(x.lb) + size(x.rt);
 		return x;
 	}
 
-	private RectHV getLeftRectByLevel(RectHV rect, Point2D p, int level) {
-		if (level % 2 == 0) {
-			return new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), p.y());
+	private RectHV getLeftRectByLevel(Node next, RectHV rect, Point2D p, int level) {
+		if (next == null) {
+			if (level % 2 == 0) {
+				return new RectHV(rect.xmin(), rect.ymin(), rect.xmax(), p.y());
+			} else {
+				return new RectHV(rect.xmin(), rect.ymin(), p.x(), rect.ymax());
+			}
 		} else {
-			return new RectHV(rect.xmin(), rect.ymin(), p.x(), rect.ymax());
+			return next.rect;
 		}
 	}
 
-	private RectHV getRightRectByLevel(RectHV rect, Point2D p, int level) {
-		if (level % 2 == 0) {
-			return new RectHV(rect.xmin(), p.y(), rect.xmax(), rect.ymax());
+	private RectHV getRightRectByLevel(Node next, RectHV rect, Point2D p, int level) {
+		if (next == null) {
+			if (level % 2 == 0) {
+				return new RectHV(rect.xmin(), p.y(), rect.xmax(), rect.ymax());
+			} else {
+				return new RectHV(p.x(), rect.ymin(), rect.xmax(), rect.ymax());
+			}
 		} else {
-			return new RectHV(p.x(), rect.ymin(), rect.xmax(), rect.ymax());
+			return next.rect;
 		}
 	}
 
