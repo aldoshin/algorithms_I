@@ -1,7 +1,8 @@
 Personal History for Algorithms, Part I course
 ============
+All solutions make use of the library http://algs4.cs.princeton.edu/code/algs4-data.zip
 
-##Union Find
+Union Find
 -----------------
 The solution for Percolation does not deal with backwash and uses Union-Find algorithm
 
