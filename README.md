@@ -9,8 +9,16 @@ The solution for Percolation does not deal with backwash and uses Union-Find alg
 Makes use of __Weighted quick-union__: Rather than arbitrarily connecting the second tree to the first for union() in the quick-union algorithm, we keep track of the size of each tree and always connect the smaller tree to the larger. Program WeightedQuickUnionUF.java http://algs4.cs.princeton.edu/15uf/WeightedQuickUnionUF.java.html implements this approach
 
 
+Randomized Queue
+----------------------
 The Subset handles the case where the maximum size of RandomizedQueue object created is <= k by randomizing the array of string
+
+Collinear Points
+-------------------------------
+Draw lines for sets of points that are collinear using Comparator and then sorting them by their slopes
 
 Fast in collinear avoids subsets.
 
-8 puzzle solved with A* algorithm
+8 puzzle
+-----------------------------
+8 puzzle solved with A* algorithm. Using PriorityQueue and the manhattan criteria.
