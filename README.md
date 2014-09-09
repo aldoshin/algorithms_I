@@ -25,4 +25,4 @@ Fast in collinear avoids subsets.
 
 Kd-tree
 ---------------------------------
-Solves the nearest-neighbor problem and set of pint inside a Rectangle range using Kd-tree
+Solves the nearest-neighbor problem and collecting the set of points inside a Rectangle (range problem) using Kd-tree
