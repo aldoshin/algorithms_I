@@ -22,3 +22,7 @@ Fast in collinear avoids subsets.
 8 puzzle
 -----------------------------
 8 puzzle solved with A* algorithm. Using PriorityQueue and the manhattan criteria.
+
+Kd-tree
+---------------------------------
+Solves the nearest-neighbor problem and set of pint inside a Rectangle range using Kd-tree
