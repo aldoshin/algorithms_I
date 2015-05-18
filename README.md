@@ -1,6 +1,7 @@
 Personal History for Algorithms, Part I course
 ============
 All solutions make use of the library http://algs4.cs.princeton.edu/code/algs4-data.zip
+#### In order to fulfill Coursera's honor code all source code was move to private repository in [Bitbucket](https://bitbucket.org/aldoshin/algorithms_i)
 
 Union Find
 -----------------
